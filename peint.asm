@@ -3,45 +3,54 @@ title "EyPC 2020-1 - Proyecto final" ;directiva 'title' opcional
 	ideal			;activa modo ideal del Turbo Assembler
 	model small		;model small (segmentos de datos y codigo limitado hasta 64 KB cada uno)
 	stack 256		;tamano de stack/pila, define el tamano del segmento de stack, se mide en bytes
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	macro clear 	;macro para limpiar la pantalla
 		mov ah,00h 	;ah = 00h, limpia la pantalla
 		mov al,03h	;al = 03h. opcion de interrupcion
 		int 10h		;llama interrupcion 10h
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	macro posicionaCursor renglon,columna 	;macro para posicionar el cursor de teclado en modo texto, recibe como parametros el renglon y la columna que deben ser datos de un byte
 		mov dh,renglon	;dh = renglon
 		mov dl,columna	;dl = columna
 		mov ax,0200h 	;preparar ax para interrupcion, opcion 2
 		int 10h 	;interrupcion que maneja entrada y salida de video
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	macro inicia 	;macro para el valor inicial del DS
 		mov ax,@data 	;ax = @data
 		mov ds,ax 		;ds = ax
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	macro inteclado	;para entradas del teclado 
 		mov ah,10h 	;opcion 10
 		int 16h		;interrupcion 16h (maneja la entrada del teclado)
 		in al,60h 	;entrada desde teclado
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	macro revisamouse	;macro para verificar si existe el driver del mouse, al final el resultado estara en AX
 		mov ax,0		;opcion 0
 		int 33h			;llama interrupcion 33h para manejo del mouse, devuelve un valor en AX
 						;Si AX = 0000h, no existe el driver. Si AX = FFFFh, existe driver
 	endm 				;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	macro muestracursormouse	;macro para hacer el cursor del mouse visible
 		mov ax,1		;opcion 1, muestra el cursor del mouse
 		int 33h			;llama interrupcion 33h para manejo del mouse. Habilita la visibilidad del cursor del mouse en el programa
 	endm 				;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	macro modovideo modo 	;macro para establecer el modo de video del programa, recibe como parametro modo que debe ser el valor del modo deseado
 		mov al,modo 	;carga el valor de modo en AX
 		mov ah,0 		;opcion AH = 00h
 		int 10h 		;int 10h con opcion ah = 00h. Establece el modo de video
 	endm 				;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	macro ocultacursorteclado ;macro para ocultar el cursor del teclado
 		mov ah,01h 		;opcion ah = 01h
 		mov cx,2607h 	;pone en CX el valor de 2607h necesario para ocultar el teclado
 		int 10h 		;int 10h, oculta el mouse del teclado
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	macro imprimeselector renglon,columna 	;macro para imprimir el caracter utilizado como selector, recibe el renglon y la columna en donde se va a a imprimir el caracter
 		posicionaCursor renglon, columna 	;pone el cursor en la posicion deseada
 		mov bl,0Fh 			;Atributo de color. Blanco
@@ -50,6 +59,7 @@ title "EyPC 2020-1 - Proyecto final" ;directiva 'title' opcional
 		mov cx,1 			;el caracter se imprimira CX veces
 		int 10h 			;int 10, con opcion AH = 09h. Imprime caracter CX veces
 	endm 			;Fin de macro
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	dataseg
 nomouse		db 	'No se encuentra driver de mouse. [Enter] para salir$'
 ;Los siguientes comentarios sirven de ayuda visual en codigo fuente
@@ -79,7 +89,9 @@ renglon21	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' 
 renglon22	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	186,	' ',	' ',	' ',	' ',	179,	' ',	'C',	'E',	'R',	'R',	'A',	'R',	' ',	179,	' ',	' ',	' ',	' ',	186
 renglon23	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	186,	' ',	' ',	' ',	' ',	192,	196,	196,	196,	196,	196,	196,	196,	196,	217,	' ',	' ',	' ',	' ',	186
 renglon24	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	186
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 renglon25	db	200,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	202,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	188
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 color		db 	0Eh 	;variable color que almacena el atributo actual de color para interrupcion 10h
 ; 00h: Negro
 ; 01h: Azul
@@ -97,23 +109,28 @@ color		db 	0Eh 	;variable color que almacena el atributo actual de color para in
 ; 0Dh: Magenta Claro
 ; 0Eh: Amarillo
 ; 0Fh: Blanco
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 forma 		db 	1	;variable para almacenar la forma de la herramienta de dibujo en el lienzo
 ; 1: punto
 ; 2: cruz +
 ; 3: cruz x
 ; 4: cuadro (3x3)
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 selectorcolor	db 	63	;variable selectorcolor que guarda el valor de la columna donde se encuentra el selector de color
 ; 63: en amarillo
 ; 67: en verde
 ; 71: en rojo 
 ; 75: en azul
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 selectorforma	db 	63	;variable selectorforma que guarda el valor de la columna donde se encuentra el selector de forma
 ; 63: en punto
 ; 67: en cruz +
 ; 71: en cruz x
 ; 75: en cuadro (3x3)
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 numaux8		db 	8 	;variable numaux8 que almacena el valor 8 para hacer el calculo de las coordenadas del cursor del mouse en resolucion 80x25 
 	codeseg
+
 inicio:
 	inicia			;"inicializando" el registro DS
 	clear			;limpiar pantalla
@@ -125,10 +142,12 @@ inicio:
 	mov ax,0900h	;opcion 9 para interrupcion 21h
 	int 21h			;interrupcion 21h. Imprime cadena.
 	jmp teclado		;salta a 'teclado'
+
 imprimeui:
 	ocultacursorteclado 	;para ocultar el cursor del teclado
 	muestracursormouse		;para mostrar el cursor del mouse
 	call UI 				;procedimiento que imprime en la pantalla la interfaz de usuario del programa
+
 mouse:
 	mov ax,3		;opcion ax = 3 para interrupcion 33h. 
 	int 33h			;int 33h. para obtener la posicion del mouse y el status de sus botones
@@ -144,6 +163,7 @@ mouse:
 	xor ch,ch 		;pone en ceros la parte alta de CX ya que el valor de la columna cabe en CL
 	cmp cx,60 		;compara el valor de la columna con 60d, ya que 60 es el numero de la columna en donde se separa el lienzo de los controles del programa
 	jge botoncerrar0 	;Si es mayor, entonces el cursor del mouse se encuentra en los controles del programa y salta
+
 lienzo:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;AQUI SE REVISA SI EL BOTON IZQ DEL MOUSE SE PRESIONO DENTRO DE LA ZONA DEL LIENZO;;;;;;
@@ -154,14 +174,17 @@ botoncerrar0:
 	cmp dx,20 		;compara si el renglon del cursor es 20d, en donde se encuentra el borde superior del boton CERRAR
 	jge botoncerrar1 	;si el renglon es mayor o igual a 19d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
 	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse
+
 botoncerrar1:
 	cmp cx,65 		;compara si la columna del cursor es 65d, en donde se encuentra el borde izquierdo del boton CERRAR
 	jge botoncerrar2 	;si la columna es mayor o igual a 65d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
 	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse, ya que no se presiono el boton cerrar
+
 botoncerrar2:
 	cmp dx,22		;compara si el renglon del cursor es 22d, en donde se encuentra el borde inferior del boton CERRAR
 	jle botoncerrar3 	;Si el renglon es menor o igual a 22d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
 	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse, ya que no se presiono el boton cerrar
+
 botoncerrar3:
 	cmp cx,74 		;compara si la columna del cursor es 74d, en donde se encuentra el borde derecho del boton CERRAR
 	jle salir 		;si la columna es menor o igual a 74d, entonces terminamos de revisar todos los limites del boton CERRAR y nos indica que terminamos la ejecucion del programa
@@ -169,14 +192,37 @@ botoncerrar3:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;SI NO SE HIZO CLIC SOBRE EL BOTON CERRAR ENTONCES HAY QUE REVISAR LOS DEMAS CONTROLES;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+botonborrar0:
+	cmp dx, 15
+	jge botonborrar1
+	jmp mouse
+
+botonborrar1:
+	cmp cx, 61
+	jge botonborrar2
+	jmp mouse
+
+botonborrar2:
+	cmp dx, 17
+	jle botonborrar3
+	jmp mouse
+
+botonborrar3:
+	cmp cx, 78
+	jle call UI
+	jmp mouse
+
 teclado:
 	inteclado
 	cmp al,01Ch		;compara la entrada de teclado si fue [enter]
 	jnz teclado 	;Si la tecla no fue [enter], vuelve a leer entrada de teclado
+
 salir:
 	clear			;limpiar pantalla
 	mov ax,04C00h	;opcion 4c y exit code 0. Para terminar el programa
 	int 21h			;sale del programa
+
 ;procedimiento UI
 ;no requiere parametros de entrada
 ;Dibuja la interfaz de usuario del programa 
@@ -186,9 +232,11 @@ proc UI
 	mov dh,0		;dh = 00h, para poner cursor en renglon 0
 	mov dl,0		;dl = 00h, para poner cursor en columna 0
 	mov cx,25		;cx = 25d = 19h. Prepara registro CX para loop. Recorre 25 renglones para imprimir la interfaz de usuario de programa
+
 renglon:
 	push cx 		;almacena primer valor de CX  
 	mov cx,50h		;cx = 80d = 50h. Preparando CX para loop. Recorre 80 columnas para imprimir la interfaz
+
 columna:
 	push cx 		;almacena temporalmente el valor de CX en la pila
 	mov ax,0200h	;prepara opcion 2 para posicionar cursor
@@ -206,21 +254,26 @@ columna:
 	mov bl,0Fh 		;Si el caracter no es ninguno de los anteriores, entonces el caracter que se imprime es el que se encuentra en memoria de datos y se pone en blanco 0Fh por default 
 					;los caracteres pueden ser los siguientes: ╔, ╚, ═, ║, ╦, ╠, ╩, ╣, ╗, ╝, caracteres alfabeticos, ▼, █, ┐, └, ┘, ┌, │, ─
 	jmp imprimircaracter 	;salta a imprimir el caracter
+
 azul:
 	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,09h		;bl = 09h, atributo de color del caracter a imprimir. Azul
 	jmp imprimircaracter 	;salta a imprimir el caracter
+
 rojo:
 	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,0Ch 		;bl = 0Ch, atributo de color del caracter a imprimir. Rojo
 	jmp imprimircaracter 	;salta a imprimir el caracter
+
 amarillo:
 	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,0Eh 		;bl = 0Eh, atributo de color del caracter a imprimir. Amarillo
 	jmp imprimircaracter 	;salta a imprimir el caracter
+
 verde:
 	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,0Ah 		;bl = 0Ah, atributo de color del caracter a imprimir. Verde
+
 imprimircaracter:
 	mov ah,09h		;opcion 9 para interrupcion 10h
 	mov cx,1		;cx = 1, se imprimiran cx caracteres
