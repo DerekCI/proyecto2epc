@@ -163,13 +163,32 @@ mouse:
 	xor ch,ch 		;pone en ceros la parte alta de CX ya que el valor de la columna cabe en CL
 	cmp cx,60 		;compara el valor de la columna con 60d, ya que 60 es el numero de la columna en donde se separa el lienzo de los controles del programa
 	jge botoncerrar0 	;Si es mayor, entonces el cursor del mouse se encuentra en los controles del programa y salta
-
-lienzo:
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;														PARTE DE LIENZO
+lienzo0:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;AQUI SE REVISA SI EL BOTON IZQ DEL MOUSE SE PRESIONO DENTRO DE LA ZONA DEL LIENZO;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	cmp dx,1
+	jge lienzo1
 	jmp mouse
 
+lienzo1:
+	cmp cx,1
+	jge lienzo2
+	jmp mouse
+
+lienzo2:
+	cmp dx,24
+	jle lienzo3
+	jmp mouse
+
+lienzo3:
+	cmp dx,59
+	jle ; 								FALTA QUE DESPUES DE ESTO EMPIECE A PINTAR (?)
+	jmp mouse
+;----------------------------------------------------------------------------------------------------------------------------------------------------
+;													PARTE DE LOS BOTONES
 botoncerrar0:
 	cmp dx,20 		;compara si el renglon del cursor es 20d, en donde se encuentra el borde superior del boton CERRAR
 	jge botoncerrar1 	;si el renglon es mayor o igual a 19d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
@@ -212,7 +231,7 @@ botonborrar3:
 	cmp cx, 78
 	jle UI
 	jmp mouse
-
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 teclado:
 	inteclado
 	cmp al,01Ch		;compara la entrada de teclado si fue [enter]
