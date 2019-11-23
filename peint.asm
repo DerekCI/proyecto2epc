@@ -210,7 +210,7 @@ botonborrar2:
 
 botonborrar3:
 	cmp cx, 78
-	jle call UI
+	jle UI
 	jmp mouse
 
 teclado:
