@@ -116,7 +116,7 @@ forma 		db 	1	;variable para almacenar la forma de la herramienta de dibujo en e
 ; 3: cruz x
 ; 4: cuadro (3x3)
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
-selectorcolor	db 	63	;variable selectorcolor que guarda el valor de la columna donde se encuentra el selector de color
+selectorcolor	db 	75	;variable selectorcolor que guarda el valor de la columna donde se encuentra el selector de color
 ; 63: en amarillo
 ; 67: en verde
 ; 71: en rojo 
@@ -165,30 +165,25 @@ mouse:
 	jge botoncerrar0 	;Si es mayor, entonces el cursor del mouse se encuentra en los controles del programa y salta
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;														PARTE DE LIENZO
-lienzo0:
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;;;;;AQUI SE REVISA SI EL BOTON IZQ DEL MOUSE SE PRESIONO DENTRO DE LA ZONA DEL LIENZO;;;;;;
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	mov ax 6
-	int 33h
-	cmp dx,1
-	jge lienzo1
-	jmp mouse
+lienzo:
+	mov ax,3		;opcion ax = 3 para interrupcion 33h. 
+	int 33h	
+	mov ax,dx 		;copia el valor del renglon en AX
+	div [numaux8] 	;division entre 8 para obtener el valor del renglon en resolucion 80x25
+	mov dx,ax 		;devuelve el valor a DX
+	xor dh,dh 		;pone en ceros la parte alta de DX ya que el valor de renglon cabe en DL
+	mov ax,cx 		;copia el valor de la columna en AX
+	div [numaux8] 	;division entre 8 para obtener el valor de la columna en resolucion 80x25
+	mov cx,ax 		;devuelve el valor a CX
+	xor ch,ch 		;pone en ceros la parte alta de CX ya que el valor de la columna cabe en CL
 
-lienzo1:
-	cmp cx,1
-	jge lienzo2
-	jmp mouse
+	posicionaCursor dl,cl	
+	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
+	mov bl,0Eh 		;pone el color a "pintar"
+	mov ah,09h		;opcion 9 para interrupcion 10h
+	mov cx,1		;cx = 1, se imprimiran cx caracteres
+	int 10h			;interrupcion 10h. Imprime el caracter contenido en AL, CX veces.
 
-lienzo2:
-	cmp dx,24
-	jle lienzo3
-	jmp mouse
-
-lienzo3:
-	cmp dx,59
-	jle ; 								FALTA QUE DESPUES DE ESTO EMPIECE A PINTAR (?)
-	jmp mouse
 ;----------------------------------------------------------------------------------------------------------------------------------------------------
 ;													PARTE DE LOS BOTONES
 botoncerrar0:
@@ -213,27 +208,12 @@ botoncerrar3:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;SI NO SE HIZO CLIC SOBRE EL BOTON CERRAR ENTONCES HAY QUE REVISAR LOS DEMAS CONTROLES;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------        
+;										PARTE DE COLORES
 
-botonborrar0:
-	cmp dx, 15
-	jge botonborrar1
-	jmp mouse
 
-botonborrar1:
-	cmp cx, 61
-	jge botonborrar2
-	jmp mouse
+;------------------------------------------------------------------------------------------------------------------------------
 
-botonborrar2:
-	cmp dx, 17
-	jle botonborrar3
-	jmp mouse
-
-botonborrar3:
-	cmp cx, 78
-	jle UI
-	jmp mouse
-;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 teclado:
 	inteclado
 	cmp al,01Ch		;compara la entrada de teclado si fue [enter]
@@ -243,6 +223,9 @@ salir:
 	clear			;limpiar pantalla
 	mov ax,04C00h	;opcion 4c y exit code 0. Para terminar el programa
 	int 21h			;sale del programa
+
+
+
 
 ;procedimiento UI
 ;no requiere parametros de entrada
@@ -294,6 +277,7 @@ amarillo:
 verde:
 	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,0Ah 		;bl = 0Ah, atributo de color del caracter a imprimir. Verde
+	jmp imprimircaracter
 
 imprimircaracter:
 	mov ah,09h		;opcion 9 para interrupcion 10h
