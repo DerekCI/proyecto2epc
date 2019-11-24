@@ -169,6 +169,8 @@ lienzo0:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;AQUI SE REVISA SI EL BOTON IZQ DEL MOUSE SE PRESIONO DENTRO DE LA ZONA DEL LIENZO;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	mov ax 6
+	int 33h
 	cmp dx,1
 	jge lienzo1
 	jmp mouse
