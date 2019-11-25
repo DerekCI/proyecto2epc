@@ -64,6 +64,10 @@ title "EyPC 2020-1 - Proyecto final" ;directiva 'title' opcional
 	macro cambiacolor coloor
 		mov [color], coloor
 	endm 
+	macro cambiaforma foorma
+		mov [forma], foorma
+	endm
+
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	dataseg
 nomouse		db 	'No se encuentra driver de mouse. [Enter] para salir$'
@@ -97,7 +101,7 @@ renglon24	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 renglon25	db	200,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	202,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	188
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
-color		db 	0Fh 	;variable color que almacena el atributo actual de color para interrupcion 10h
+color		db 	0Eh 	;variable color que almacena el atributo actual de color para interrupcion 10h
 ; 00h: Negro
 ; 01h: Azul
 ; 02h: Verde
@@ -121,7 +125,7 @@ forma 		db 	1	;variable para almacenar la forma de la herramienta de dibujo en e
 ; 3: cruz x
 ; 4: cuadro (3x3)
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
-selectorcolor	db 	75	;variable selectorcolor que guarda el valor de la columna donde se encuentra el selector de color
+selectorcolor	db 	63	;variable selectorcolor que guarda el valor de la columna donde se encuentra el selector de color
 ; 63: en amarillo
 ; 67: en verde
 ; 71: en rojo 
@@ -183,7 +187,7 @@ lienzo:
 	xor ch,ch 		;pone en ceros la parte alta de CX ya que el valor de la columna cabe en CL
 
 	posicionaCursor dl,cl	
-	mov al,219		;pone el caracter de cuadro █ en AL para imprimirlo
+	mov al,[forma]		;pone el caracter de cuadro █ en AL para imprimirlo
 	mov bl,[color] 		;pone el color a "pintar"
 	mov ah,09h		;opcion 9 para interrupcion 10h
 	mov cx,1		;cx = 1, se imprimiran cx caracteres
@@ -196,7 +200,7 @@ botoncerrar0:
 	jge botoncerrar1 	;si el renglon es mayor o igual a 19d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
 
 	cmp dx,10
-	jge punto
+	jge punto0
 
 	cmp dx,3
 	jge amarillo0
@@ -218,6 +222,84 @@ botoncerrar3:
 	cmp cx,74 		;compara si la columna del cursor es 74d, en donde se encuentra el borde derecho del boton CERRAR
 	jle salir 		;si la columna es menor o igual a 74d, entonces terminamos de revisar todos los limites del boton CERRAR y nos indica que terminamos la ejecucion del programa
 	jmp mouse
+;------------------------------------------------------------------------------------------------------------------------------------------------------------- 			PARTE DE LAS FORMAS
+;FORMA DE PUNTO
+punto0:
+	cmp dx,10
+	jge punto1
+	jmp mouse
+punto1:
+	cmp cx,62
+	je punto2
+	cmp cx,66
+	je cruz0
+	cmp cx,70
+	je equis0
+	cmp cx,74
+	je grande0
+	jmp mouse
+punto2:
+	cmp dx,12
+	jle punto3
+	jmp mouse
+punto3:
+	cmp cx,64
+	cambiaforma 220
+	jmp mouse
+
+;FORMA DE CRUZ
+cruz0:
+	cmp dx,10
+	jge cruz1
+	jmp mouse
+cruz1:
+	cmp cx,66
+	je cruz2
+	jmp mouse
+cruz2:
+	cmp dx,12
+	jle cruz3
+	jmp mouse
+cruz3:
+	cmp cx,68
+	cambiaforma 43
+	jmp mouse
+
+;FORMA X
+equis0:
+	cmp dx,10
+	jge equis1
+	jmp mouse
+equis1:
+	cmp cx,70
+	je equis2
+	jmp mouse
+equis2:
+	cmp dx,12
+	jle equis3
+	jmp mouse
+equis3:
+	cmp cx,72
+	cambiaforma 120
+	jmp mouse
+
+;PUNTO GRANDE
+grande0:
+	cmp dx,10
+	jge grande1
+	jmp mouse
+grande1:
+	cmp cx,74
+	je grande2
+	jmp mouse
+grande2:
+	cmp dx,12
+	jle grande3
+	jmp mouse
+grande3:
+	cmp cx,76
+	cambiaforma 219
+	jmp mouse
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------        
 ;										PARTE DE COLORES
 amarillo0:
@@ -234,14 +316,13 @@ amarillo1:
 	cmp cx,74
 	je azul0
 	jmp mouse
-
 amarillo2:
 	cmp dx,4
 	jle amarillo3
 	jmp mouse
 amarillo3:
 	cmp cx,64
-	cambiacolor 0Eh
+	cambiacolor 0Eh 63
 	jmp mouse
 
 verde0:
@@ -258,7 +339,7 @@ verde2:
 	jmp mouse
 verde3:
 	cmp cx,68
-	cambiacolor 02h
+	cambiacolor 02h 67
 	jmp mouse
 
 rojo0:
@@ -275,7 +356,7 @@ rojo2:
 	jmp mouse
 rojo3:
 	cmp cx,72
-	cambiacolor 04h
+	cambiacolor 04h 71
 	jmp mouse
 
 azul0:
@@ -292,7 +373,7 @@ azul2:
 	jmp mouse
 azul3:
 	cmp cx,76
-	cambiacolor 01h
+	cambiacolor 01h 75
 	jmp mouse
 ;------------------------------------------------------------------------------------------------------------------------------
 
