@@ -1,3 +1,4 @@
+JUMPS
 ;Este programa solo contiene la interfaz de usuario del proyecto
 title "EyPC 2020-1 - Proyecto final" ;directiva 'title' opcional
 	ideal			;activa modo ideal del Turbo Assembler
@@ -59,6 +60,10 @@ title "EyPC 2020-1 - Proyecto final" ;directiva 'title' opcional
 		mov cx,1 			;el caracter se imprimira CX veces
 		int 10h 			;int 10, con opcion AH = 09h. Imprime caracter CX veces
 	endm 			;Fin de macro
+
+	macro cambiacolor coloor
+		mov [color], coloor
+	endm 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	dataseg
 nomouse		db 	'No se encuentra driver de mouse. [Enter] para salir$'
@@ -92,7 +97,7 @@ renglon24	db	186,	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 renglon25	db	200,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	202,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	205,	188
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
-color		db 	0Eh 	;variable color que almacena el atributo actual de color para interrupcion 10h
+color		db 	0Fh 	;variable color que almacena el atributo actual de color para interrupcion 10h
 ; 00h: Negro
 ; 01h: Azul
 ; 02h: Verde
@@ -178,18 +183,26 @@ lienzo:
 	xor ch,ch 		;pone en ceros la parte alta de CX ya que el valor de la columna cabe en CL
 
 	posicionaCursor dl,cl	
-	mov al,219 		;pone el caracter de cuadro █ en AL para imprimirlo
-	mov bl,0Eh 		;pone el color a "pintar"
+	mov al,219		;pone el caracter de cuadro █ en AL para imprimirlo
+	mov bl,[color] 		;pone el color a "pintar"
 	mov ah,09h		;opcion 9 para interrupcion 10h
 	mov cx,1		;cx = 1, se imprimiran cx caracteres
 	int 10h			;interrupcion 10h. Imprime el caracter contenido en AL, CX veces.
-
+	jmp mouse
 ;----------------------------------------------------------------------------------------------------------------------------------------------------
 ;													PARTE DE LOS BOTONES
 botoncerrar0:
 	cmp dx,20 		;compara si el renglon del cursor es 20d, en donde se encuentra el borde superior del boton CERRAR
 	jge botoncerrar1 	;si el renglon es mayor o igual a 19d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
+
+	cmp dx,10
+	jge punto
+
+	cmp dx,3
+	jge amarillo0
 	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse
+
+
 
 botoncerrar1:
 	cmp cx,65 		;compara si la columna del cursor es 65d, en donde se encuentra el borde izquierdo del boton CERRAR
@@ -204,14 +217,83 @@ botoncerrar2:
 botoncerrar3:
 	cmp cx,74 		;compara si la columna del cursor es 74d, en donde se encuentra el borde derecho del boton CERRAR
 	jle salir 		;si la columna es menor o igual a 74d, entonces terminamos de revisar todos los limites del boton CERRAR y nos indica que terminamos la ejecucion del programa
-	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse, ya que no se presiono el boton cerrar
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;;SI NO SE HIZO CLIC SOBRE EL BOTON CERRAR ENTONCES HAY QUE REVISAR LOS DEMAS CONTROLES;;;
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	jmp mouse
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------        
 ;										PARTE DE COLORES
+amarillo0:
+	cmp dx,3
+	jge amarillo1
+	jmp mouse
+amarillo1:
+	cmp cx,62
+	je amarillo2
+	cmp cx,66
+	je verde0
+	cmp cx,70
+	je rojo0
+	cmp cx,74
+	je azul0
+	jmp mouse
 
+amarillo2:
+	cmp dx,4
+	jle amarillo3
+	jmp mouse
+amarillo3:
+	cmp cx,64
+	cambiacolor 0Eh
+	jmp mouse
 
+verde0:
+	cmp dx,3
+	jge verde1
+	jmp mouse
+verde1:
+	cmp cx,66
+	je verde2
+	jmp mouse
+verde2:
+	cmp dx,4
+	jle verde3
+	jmp mouse
+verde3:
+	cmp cx,68
+	cambiacolor 02h
+	jmp mouse
+
+rojo0:
+	cmp dx,3
+	jge rojo1
+	jmp mouse
+rojo1:
+	cmp cx,70
+	je rojo2
+	jmp mouse
+rojo2:
+	cmp dx,4
+	jle rojo3
+	jmp mouse
+rojo3:
+	cmp cx,72
+	cambiacolor 04h
+	jmp mouse
+
+azul0:
+	cmp dx,3
+	jge azul1
+	jmp mouse
+azul1:
+	cmp cx,74
+	je azul2
+	jmp mouse
+azul2:
+	cmp dx,4
+	jle azul3
+	jmp mouse
+azul3:
+	cmp cx,76
+	cambiacolor 01h
+	jmp mouse
 ;------------------------------------------------------------------------------------------------------------------------------
 
 teclado:
