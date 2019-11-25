@@ -199,14 +199,18 @@ botoncerrar0:
 	cmp dx,20 		;compara si el renglon del cursor es 20d, en donde se encuentra el borde superior del boton CERRAR
 	jge botoncerrar1 	;si el renglon es mayor o igual a 19d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
 
+	;Compara si se seleccionó el boton de borrar
+	cmp dx, 15
+	jge botonborrar0
+
+	;Compara si se seleccionó alguna forma
 	cmp dx,10
 	jge punto0
 
+	;Compara si se seleccionó algun color
 	cmp dx,3
 	jge amarillo0
 	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse
-
-
 
 botoncerrar1:
 	cmp cx,65 		;compara si la columna del cursor es 65d, en donde se encuentra el borde izquierdo del boton CERRAR
@@ -221,6 +225,26 @@ botoncerrar2:
 botoncerrar3:
 	cmp cx,74 		;compara si la columna del cursor es 74d, en donde se encuentra el borde derecho del boton CERRAR
 	jle salir 		;si la columna es menor o igual a 74d, entonces terminamos de revisar todos los limites del boton CERRAR y nos indica que terminamos la ejecucion del programa
+	jmp mouse
+
+botonborrar0:
+	cmp dx,14
+	jge botonborrar1
+	jmp mouse
+
+botonborrar1:
+	cmp cx,60 		;compara si la columna del cursor es 65d, en donde se encuentra el borde izquierdo del boton CERRAR
+	jge botonborrar2 	;si la columna es mayor o igual a 65d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
+	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse, ya que no se presiono el boton cerrar
+
+botonborrar2:
+	cmp dx,17		;compara si el renglon del cursor es 22d, en donde se encuentra el borde inferior del boton CERRAR
+	jle botonborrar3 	;Si el renglon es menor o igual a 22d, entonces es posible que se haya presionado el boton CERRAR, pero hay que revisar los demas limites
+	jmp mouse 		;salta a mouse para volver a leer la posicion del mouse, ya que no se presiono el boton cerrar
+
+botonborrar3:
+	cmp cx,79 		;compara si la columna del cursor es 74d, en donde se encuentra el borde derecho del boton CERRAR
+	jle imprimeui 		;si la columna es menor o igual a 74d, entonces terminamos de revisar todos los limites del boton CERRAR y nos indica que terminamos la ejecucion del programa
 	jmp mouse
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------- 			PARTE DE LAS FORMAS
 ;FORMA DE PUNTO
