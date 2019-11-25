@@ -253,13 +253,36 @@ punto0:
 	jge punto1
 	jmp mouse
 punto1:
+	;			Comparaciones punto
 	cmp cx,62
 	je punto2
+	cmp cx,63
+	je punto2
+	cmp cx,64
+	je punto2
+
+	;			Comparaciones cruz
 	cmp cx,66
 	je cruz0
+	cmp cx,67
+	je cruz0
+	cmp cx,68
+	je cruz0
+
+	;			Comparaciones x
 	cmp cx,70
 	je equis0
+	cmp cx,71
+	je equis0
+	cmp cx,72
+	je equis0
+
+	;			Comparaciones punto grande
 	cmp cx,74
+	je grande0
+	cmp cx,75
+	je grande0
+	cmp cx,76
 	je grande0
 	jmp mouse
 punto2:
@@ -271,14 +294,13 @@ punto3:
 	cambiaforma 220
 	jmp mouse
 
-;FORMA DE CRUZ
 cruz0:
 	cmp dx,10
 	jge cruz1
 	jmp mouse
 cruz1:
 	cmp cx,66
-	je cruz2
+	jge cruz2
 	jmp mouse
 cruz2:
 	cmp dx,12
@@ -286,17 +308,16 @@ cruz2:
 	jmp mouse
 cruz3:
 	cmp cx,68
-	cambiaforma 43
+	cambiaforma 43 
 	jmp mouse
 
-;FORMA X
 equis0:
 	cmp dx,10
 	jge equis1
 	jmp mouse
 equis1:
 	cmp cx,70
-	je equis2
+	jge equis2
 	jmp mouse
 equis2:
 	cmp dx,12
@@ -304,17 +325,16 @@ equis2:
 	jmp mouse
 equis3:
 	cmp cx,72
-	cambiaforma 120
+	cambiaforma 120 
 	jmp mouse
 
-;PUNTO GRANDE
 grande0:
 	cmp dx,10
 	jge grande1
 	jmp mouse
 grande1:
 	cmp cx,74
-	je grande2
+	jge grande2
 	jmp mouse
 grande2:
 	cmp dx,12
@@ -322,7 +342,7 @@ grande2:
 	jmp mouse
 grande3:
 	cmp cx,76
-	cambiaforma 219
+	cambiaforma 219 
 	jmp mouse
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------        
 ;										PARTE DE COLORES
@@ -331,13 +351,36 @@ amarillo0:
 	jge amarillo1
 	jmp mouse
 amarillo1:
+	;			Comparaciones amarillo
 	cmp cx,62
 	je amarillo2
+	cmp cx,63
+	je amarillo2
+	cmp cx,64
+	je amarillo2
+
+	;			Comparaciones verde
 	cmp cx,66
 	je verde0
+	cmp cx,67
+	je verde0
+	cmp cx,68
+	je verde0
+
+	;			Comparaciones rojo
 	cmp cx,70
 	je rojo0
+	cmp cx,71
+	je rojo0
+	cmp cx,72
+	je rojo0
+
+	;			Comparaciones azul
 	cmp cx,74
+	je azul0
+	cmp cx,75
+	je azul0
+	cmp cx,76
 	je azul0
 	jmp mouse
 amarillo2:
@@ -346,7 +389,7 @@ amarillo2:
 	jmp mouse
 amarillo3:
 	cmp cx,64
-	cambiacolor 0Eh 63
+	cambiacolor 0Eh
 	jmp mouse
 
 verde0:
@@ -355,7 +398,7 @@ verde0:
 	jmp mouse
 verde1:
 	cmp cx,66
-	je verde2
+	jge verde2
 	jmp mouse
 verde2:
 	cmp dx,4
@@ -363,7 +406,7 @@ verde2:
 	jmp mouse
 verde3:
 	cmp cx,68
-	cambiacolor 02h 67
+	cambiacolor 02h 
 	jmp mouse
 
 rojo0:
@@ -372,7 +415,7 @@ rojo0:
 	jmp mouse
 rojo1:
 	cmp cx,70
-	je rojo2
+	jge rojo2
 	jmp mouse
 rojo2:
 	cmp dx,4
@@ -380,7 +423,7 @@ rojo2:
 	jmp mouse
 rojo3:
 	cmp cx,72
-	cambiacolor 04h 71
+	cambiacolor 04h 
 	jmp mouse
 
 azul0:
@@ -389,7 +432,7 @@ azul0:
 	jmp mouse
 azul1:
 	cmp cx,74
-	je azul2
+	jge azul2
 	jmp mouse
 azul2:
 	cmp dx,4
@@ -397,7 +440,7 @@ azul2:
 	jmp mouse
 azul3:
 	cmp cx,76
-	cambiacolor 01h 75
+	cambiacolor 01h 
 	jmp mouse
 ;------------------------------------------------------------------------------------------------------------------------------
 
